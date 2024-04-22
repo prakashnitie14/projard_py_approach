@@ -21,7 +21,7 @@ import java.util.List;
 public class PersistenceService {
     private final S3Client s3Client;
     private final Region region;
-    private final String RAW_DATA_BUCKET_NAME = "ard-input";
+    private final String RAW_DATA_BUCKET_NAME = "ard-input.txt";
     private String RAW_DATA_KEY = "src";
 
     public PersistenceService() {
