@@ -1,21 +1,35 @@
 package com.corporate.riskmanagement.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 
 @Data
 public class CompanyFinancialAnalysis {
-    private String name;
-    record BalanceSheet(BigDecimal totalCurrentAssets, BigDecimal totalCurrentLiabilities) {
+    public record IncomeStatementCurrentYear(String currentYear, IncomeStatement incomeStatement) {
     }
-    record IncomeStatement(BigDecimal grossProfit, BigDecimal incomeBeforeTaxes) {
+    public record IncomeStatementPreviousYear(String previousYear, IncomeStatement incomeStatement) {
     }
-    record FinancialData(LocalDate asOnDate, BalanceSheet balanceSheet, IncomeStatement incomeStatement) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record IncomeStatement(String gross_profit, String income_before_taxes, String costOfSales, String depreciation,
+                                  String net_income_before_taxes, String hst_Receivable) {
+    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record IncomeStatementRecords(IncomeStatementCurrentYear incomeStatementCurrentYear, IncomeStatementPreviousYear incomeStatementPreviousYear) {
     }
 
-    List<FinancialData> financialDataList;
+
+    public record BalanceSheetCurrentYear(String currentYear, BalanceSheet balanceSheet) {
+    }
+    public record BalanceSheetPreviousYear(String previousYear, BalanceSheet balanceSheet) {
+    }
+    public record BalanceSheet(String total_current_assets, String total_current_liabilities) {
+    }
+    public record BalanceSheetRecords(BalanceSheetCurrentYear balanceSheetCurrentYear, BalanceSheetPreviousYear balanceSheetPreviousYear) {
+    }
+
+    @Builder
+    public record FinancialData(String companyName, BalanceSheetRecords balanceSheet, IncomeStatementRecords incomeStatement) {
+    }
 
 }
