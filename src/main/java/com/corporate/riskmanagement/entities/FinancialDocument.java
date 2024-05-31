@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class CompanyRiskDocument {
+public class FinancialDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long riskDocsId;
-    private DocumentType docType;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

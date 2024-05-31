@@ -2,11 +2,13 @@ package com.corporate.riskmanagement.services;
 
 import com.corporate.riskmanagement.aws.PersistenceService;
 import com.corporate.riskmanagement.entities.Company;
-import com.corporate.riskmanagement.entities.CompanyRiskDocument;
+import com.corporate.riskmanagement.entities.ExtractedFinancialEntities;
+import com.corporate.riskmanagement.entities.FinancialDocument;
 import com.corporate.riskmanagement.entities.DocumentMetadata;
 import com.corporate.riskmanagement.repository.CompanyCrudRepo;
 import com.corporate.riskmanagement.repository.CompanyRiskDocumentsCrudRepo;
 import com.corporate.riskmanagement.repository.DocumentMetadataCrudRepo;
+import com.corporate.riskmanagement.repository.ExtractedEntititesRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,15 +27,16 @@ public class AnnualReviewService {
     private final PersistenceService persistenceService;
     private final CompanyCrudRepo companyCrudRepo;
     private final DocumentMetadataCrudRepo documentMetadataCrudRepo;
+    private final ExtractedEntititesRepo extractedEntititesRepo;
 
-    public void uploadDocuments(CompanyRiskDocument companyRiskDocument, MultipartFile file) throws IOException {
+    public void uploadDocuments(FinancialDocument financialDocument, MultipartFile file) throws IOException {
         CompleteMultipartUploadResponse completeMultipartUploadResponse = persistenceService.persistFile(file);
         DocumentMetadata documentMetadata = new DocumentMetadata();
         documentMetadata.setFileName(file.getOriginalFilename());
         documentMetadata.setS3Uri(completeMultipartUploadResponse.location());
         documentMetadataCrudRepo.save(documentMetadata);
-        companyRiskDocument.setDocumentMetadata(documentMetadata);
-        companyRiskDocumentsCrudRepo.save(companyRiskDocument);
+        financialDocument.setDocumentMetadata(documentMetadata);
+        companyRiskDocumentsCrudRepo.save(financialDocument);
     }
 
     public List<Company> getCompanies(){
@@ -47,5 +50,14 @@ public class AnnualReviewService {
     public Company getCompany(Long id) {
         Optional<Company> companyOptional = companyCrudRepo.findById(id);
         return companyOptional.orElse(null);
+    }
+
+    public Company getCompany(String name) {
+        Optional<Company> companyOptional = companyCrudRepo.findByName(name);
+        return companyOptional.orElse(null);
+    }
+
+    public ExtractedFinancialEntities persistExtractedEntities(ExtractedFinancialEntities extractedFinancialEntities){
+        return extractedEntititesRepo.save(extractedFinancialEntities);
     }
 }

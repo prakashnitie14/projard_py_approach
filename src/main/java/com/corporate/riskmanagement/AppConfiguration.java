@@ -3,12 +3,10 @@ package com.corporate.riskmanagement;
 
 import com.corporate.riskmanagement.langchain.constructs.HuggingFaceChatLanguageModel;
 import com.corporate.riskmanagement.langchain.constructs.HuggingFaceClient;
-import com.corporate.riskmanagement.langchain.constructs.HuggingFaceEmbeddingModel;
-import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.MetadataMode;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.huggingface.HuggingfaceChatClient;
 import org.springframework.ai.transformers.TransformersEmbeddingClient;
@@ -18,6 +16,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
 
@@ -44,12 +44,12 @@ public class AppConfiguration {
     @Bean
     HuggingfaceChatClient chatClient() {
         return new HuggingfaceChatClient(HF_TOKEN,
-                "https://hcwqdczb7dx0ksck.us-east-1.aws.endpoints.huggingface.cloud");
+                MiSTRAL_INFERENCE_ENDPOINT);
     }
 
     @Bean
     TransformersEmbeddingClient embeddingClient(){
-        return new TransformersEmbeddingClient();
+        return new TransformersEmbeddingClient(MetadataMode.NONE);
     }
 
     @Bean
@@ -76,21 +76,22 @@ public class AppConfiguration {
         return new dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel(HF_TOKEN, EMBEDDING_MODEL, true, Duration.ofMinutes(2));
     }
 
-//    @Bean
-//    HuggingFaceChatModel huggingFaceChatModel() {
-//        return new HuggingFaceChatModel.Builder()
-//                .returnFullText(true)
-//                .accessToken(HF_TOKEN)
-//                .modelId(LLM)
-//                .build();
-//    }
-
     @Bean
     HuggingFaceChatLanguageModel huggingFaceChatModel() {
         return HuggingFaceChatLanguageModel.builder()
-                .returnFullText(true)
+                .returnFullText(false)
                 .client(huggingFaceClient())
                 .build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(final CorsRegistry registry) {
+                registry.addMapping("/**").allowedMethods("*").allowedHeaders("*");
+            }
+        };
     }
 
 }

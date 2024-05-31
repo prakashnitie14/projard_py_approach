@@ -27,7 +27,7 @@ public class HuggingFaceChatLanguageModel implements ChatLanguageModel {
         TextGenerationRequest request = TextGenerationRequest.builder()
                 .inputs((String)messages.stream().map(ChatMessage::text).collect(Collectors.joining("\n")))
                 .parameters(Parameters.builder()
-                        .maxNewTokens(this.maxNewTokens)
+                        .topK(5)
                         .maxNewTokens(1000)
                         .returnFullText(false)
                         .build())

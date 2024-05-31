@@ -20,5 +20,9 @@ public class Company {
     private String name;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    private List<CompanyRiskDocument> companyRiskDocuments;
+    private List<FinancialDocument> financialDocuments;
+
+    public Company(String name) {
+        this.name = name;
+    }
 }

@@ -3,6 +3,7 @@ package com.corporate.riskmanagement.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,17 +11,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class DocumentMetadata {
+@Builder
+public class ExtractedFinancialEntities {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long docMetadataId;
-    @Column
-    private String s3Uri;
-    @Column
-    private String fileName;
+    private Long extractedEntitiesId;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "documentMetadata")
-    private FinancialDocument financialDocument;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="company_id", nullable=false)
+    private Company company;
+
+    private String rawData;
 
 }

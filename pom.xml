@@ -89,6 +89,15 @@
 			<artifactId>spring-ai-pdf-document-reader</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.30</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-tika-document-reader</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-transformers</artifactId>
 		</dependency>
@@ -175,16 +184,11 @@
 			<version>${langchain4j.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
-			<version>${langchain4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-parser-apache-poi</artifactId>
-			<version>${langchain4j.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>dev.langchain4j</groupId>-->
+<!--			<artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>-->
+<!--			<version>${langchain4j.version}</version>-->
+<!--		</dependency>-->
 
 
 		<!-- AWS dependencies-->

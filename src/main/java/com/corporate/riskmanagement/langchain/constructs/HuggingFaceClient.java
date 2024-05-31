@@ -74,7 +74,7 @@ public class HuggingFaceClient implements dev.langchain4j.model.huggingface.clie
         try {
             log.info("Sending request to generate text={}", request);
             Response<List<TextGenerationResponse>> retrofitResponse = this.huggingFaceApi.generate(request).execute();
-            log.info("Retrofit response from API={}", retrofitResponse.body());
+            log.info("Retrofit response from API={}", retrofitResponse.body().get(0).generatedText());
             if (retrofitResponse.isSuccessful()) {
                 return toOneResponse(retrofitResponse);
             } else {
