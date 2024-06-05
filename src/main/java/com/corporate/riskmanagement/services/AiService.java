@@ -49,11 +49,11 @@ public class AiService {
         String response1 = (String) extractFinancialData("""
             Extract data in the below format from the provided financial document
                 {format}
-            """, CompanyFinancialAnalysis.FinancialData.class, FinancialDataExtractor.PROMPT);
-        return "Final response is " +response1;
+            """, FinancialDataExtractor.PROMPT);
+        return response1;
     }
 
-    private Object extractFinancialData(String query, Class outputParser, String  systemPrompt) {
+    private String extractFinancialData(String query, String systemPrompt) {
         log.info("Performing similarity search for query={}", query);
         List<Document> similarDocuments = vectorStore.similaritySearch(SearchRequest.query(query).withTopK(5));
         String documents = similarDocuments.stream().map(Document::getContent).collect(Collectors.joining(System.lineSeparator()));
@@ -61,7 +61,7 @@ public class AiService {
         var systemMessageDocs = systemPromptTemplate.createMessage(
                 Map.of("information", documents));
 
-        var statementsByPeriodBeanOutputParser = new BeanOutputParser<>(outputParser);
+        var statementsByPeriodBeanOutputParser = new BeanOutputParser<>(CompanyFinancialAnalysis.FinancialData.class);
 
         PromptTemplate userMessagePromptTemplate = new PromptTemplate(query);
         userMessagePromptTemplate.setOutputParser(statementsByPeriodBeanOutputParser);
@@ -78,7 +78,7 @@ public class AiService {
             response = response.substring(7,response.lastIndexOf("```"));
         }
         try {
-            statementsByPeriodBeanOutputParser.parse(response);
+            log.info("Extracted entities {}" ,statementsByPeriodBeanOutputParser.parse(response));
         }
         catch(Exception e){
             log.warn("Unable to parse response {}", e.getMessage());

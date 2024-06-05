@@ -29,7 +29,7 @@ public class AnnualReviewService {
     private final DocumentMetadataCrudRepo documentMetadataCrudRepo;
     private final ExtractedEntititesRepo extractedEntititesRepo;
 
-    public void uploadDocuments(FinancialDocument financialDocument, MultipartFile file) throws IOException {
+    public String uploadDocuments(FinancialDocument financialDocument, MultipartFile file) throws IOException {
         CompleteMultipartUploadResponse completeMultipartUploadResponse = persistenceService.persistFile(file);
         DocumentMetadata documentMetadata = new DocumentMetadata();
         documentMetadata.setFileName(file.getOriginalFilename());
@@ -37,6 +37,7 @@ public class AnnualReviewService {
         documentMetadataCrudRepo.save(documentMetadata);
         financialDocument.setDocumentMetadata(documentMetadata);
         companyRiskDocumentsCrudRepo.save(financialDocument);
+        return documentMetadata.getS3Uri();
     }
 
     public List<Company> getCompanies(){
@@ -59,5 +60,10 @@ public class AnnualReviewService {
 
     public ExtractedFinancialEntities persistExtractedEntities(ExtractedFinancialEntities extractedFinancialEntities){
         return extractedEntititesRepo.save(extractedFinancialEntities);
+    }
+
+    public Optional<ExtractedFinancialEntities> getExtractedEntities(String companyName){
+        Optional<Company> companyOptional = companyCrudRepo.findByName(companyName);
+        return extractedEntititesRepo.findByCompany(companyOptional.get());
     }
 }

@@ -3,10 +3,12 @@ package com.corporate.riskmanagement.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
+@ToString
 public class CompanyFinancialAnalysis {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record IncomeStatement(String grossProfit,

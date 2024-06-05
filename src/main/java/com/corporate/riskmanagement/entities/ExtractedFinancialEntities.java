@@ -22,6 +22,7 @@ public class ExtractedFinancialEntities {
     @JoinColumn(name="company_id", nullable=false)
     private Company company;
 
+    @Lob
     private String rawData;
 
 }

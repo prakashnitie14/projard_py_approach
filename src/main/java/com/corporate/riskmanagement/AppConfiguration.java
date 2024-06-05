@@ -24,12 +24,13 @@ import java.time.Duration;
 @Configuration
 @Slf4j
 public class AppConfiguration {
-    private static final String HF_TOKEN="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";
+    private static final String HF_TOKEN="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";
     private static final String EMBEDDING_MODEL="sentence-transformers/all-mpnet-base-v2";
     private static final String EMBEDDING_ENDPOINT="https://s2yfs55xbdbjwc14.us-east-1.aws.endpoints.huggingface.cloud";
     private static final String LLM="mistralai/Mistral-7B-Instruct-v0.2";
     private static final String MiSTRAL_INFERENCE_ENDPOINT="https://hcwqdczb7dx0ksck.us-east-1.aws.endpoints.huggingface.cloud";
     private static final String LLAMA3_INFERENCE_ENDPOINT="https://j7xzywx6eone6oc3.us-east-1.aws.endpoints.huggingface.cloud";
+    private static final String GEMMA_INFERENCE_ENDPOINT="https://mk78z5zilvz7tnc7.us-east-1.aws.endpoints.huggingface.cloud";
 
     @Bean
     VectorStore vectorStore(EmbeddingClient embeddingClient) {

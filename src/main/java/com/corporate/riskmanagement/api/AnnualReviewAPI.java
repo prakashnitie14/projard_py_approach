@@ -1,5 +1,6 @@
 package com.corporate.riskmanagement.api;
 
+import com.corporate.riskmanagement.dto.FileUploadResponse;
 import com.corporate.riskmanagement.entities.Company;
 import com.corporate.riskmanagement.entities.ExtractedFinancialEntities;
 import com.corporate.riskmanagement.entities.FinancialDocument;
@@ -23,7 +24,7 @@ public class AnnualReviewAPI {
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @PostMapping("/upload")
-    public void uploadFileForCompany(@RequestParam String companyName,@RequestParam MultipartFile file) throws IOException {
+    public FileUploadResponse uploadFileForCompany(@RequestParam String companyName, @RequestParam MultipartFile file) throws IOException {
         log.info("Uploading documents for company={}", companyName);
         FinancialDocument financialDocument = new FinancialDocument();
         Company existingCompany = annualReviewService.getCompany(companyName);
@@ -32,7 +33,7 @@ public class AnnualReviewAPI {
         }
         log.info("created company with id={}", existingCompany.getId());
         financialDocument.setCompany(existingCompany);
-        annualReviewService.uploadDocuments(financialDocument, file);
+        String location = annualReviewService.uploadDocuments(financialDocument, file);
         Company finalExistingCompany = existingCompany;
         executorService.submit(() -> {
             try {
@@ -47,5 +48,11 @@ public class AnnualReviewAPI {
             }
         });
         log.info("Successfully uploaded documents for company={}", companyName);
+        return FileUploadResponse.builder().filePath(location).build();
+    }
+
+    @GetMapping("/extracted/data")
+    public ExtractedFinancialEntities getExtractedEntities(@RequestParam String companyName){
+        return annualReviewService.getExtractedEntities(companyName).orElse(ExtractedFinancialEntities.builder().build());
     }
 }

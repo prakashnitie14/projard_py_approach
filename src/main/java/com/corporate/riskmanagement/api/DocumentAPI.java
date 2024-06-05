@@ -36,7 +36,7 @@ public class DocumentAPI {
     }
 
     @PostMapping("/rag/document/")
-    public String chatWithModelUsingVectorStore(@RequestParam MultipartFile file) throws IOException {
+    public Object chatWithModelUsingVectorStore(@RequestParam MultipartFile file) throws IOException {
         return aiService.chatWithModelUsingVectorStore(file);
     }
 }
