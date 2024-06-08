@@ -19,15 +19,21 @@ public class CompanyFinancialAnalysis {
                                   String totalExpenses,
                                   String totalSales,
                                   String interestExpense,
-                                  String fiscalYear) {
+                                  String financialYear) {
     }
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record IncomeStatementRecords(List<IncomeStatement> incomeStatements) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record BalanceSheet(String totalCurrentAssets, String totalCurrentLiabilities, String totalNonCurrentAssets,
-                               String totalNonCurrentLiabilities, String hstReceivable, String interestReceivable, String fiscalYear) {
+    public record BalanceSheet(String totalCurrentAssets,
+                               String totalCurrentLiabilities,
+                               String totalNonCurrentAssets,
+                               String totalNonCurrentLiabilities,
+                               String hst_Receivable,
+                               String harminizedSalesTax_Receivable,
+                               String interest_Receivable,
+                               String financialYear) {
     }
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record BalanceSheetRecords(List<BalanceSheet> balanceSheets) {

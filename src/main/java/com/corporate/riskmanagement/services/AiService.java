@@ -40,20 +40,20 @@ public class AiService {
         vectorStore.delete(docIds);
         return "true";
     }
-    public String chatWithModelUsingVectorStore(@RequestParam MultipartFile file) throws IOException {
+    public Object chatWithModelUsingVectorStore(@RequestParam MultipartFile file) throws IOException {
         log.info("Persisting document with name={} in the vector store", file.getOriginalFilename());
         DocumentReader documentReader = new TikaDocumentReader(new InputStreamResource(new ByteArrayInputStream(file.getBytes())));
         List<Document> documents = documentReader.get();
         vectorStore.add(documents);
         docIds = documents.stream().map(Document::getId).toList();
-        String response1 = (String) extractFinancialData("""
-            Extract data in the below format from the provided financial document
+        Object response1 = extractFinancialData("""
+            Extract data in the below format from the provided financial documents
                 {format}
             """, FinancialDataExtractor.PROMPT);
         return response1;
     }
 
-    private String extractFinancialData(String query, String systemPrompt) {
+    private Object extractFinancialData(String query, String systemPrompt) {
         log.info("Performing similarity search for query={}", query);
         List<Document> similarDocuments = vectorStore.similaritySearch(SearchRequest.query(query).withTopK(5));
         String documents = similarDocuments.stream().map(Document::getContent).collect(Collectors.joining(System.lineSeparator()));
@@ -77,12 +77,14 @@ public class AiService {
         if(response.startsWith("```json")){
             response = response.substring(7,response.lastIndexOf("```"));
         }
+        Object financialData = response;
         try {
-            log.info("Extracted entities {}" ,statementsByPeriodBeanOutputParser.parse(response));
+            financialData = statementsByPeriodBeanOutputParser.parse(response);
+            log.info("Extracted entities {}", financialData);
         }
         catch(Exception e){
             log.warn("Unable to parse response {}", e.getMessage());
         }
-        return response;
+        return financialData;
     }
 }
