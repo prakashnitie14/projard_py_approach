@@ -1,2 +1,0 @@
-INSERT INTO COMPANY (name) VALUES ("Apple");
-INSERT INTO COMPANY (name) VALUES ("Dollarama");

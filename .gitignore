@@ -1,10 +1,5 @@
-node_modules/
-frontend/generated/
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+venv/*
+target/*
 
 ### STS ###
 .apt_generated
