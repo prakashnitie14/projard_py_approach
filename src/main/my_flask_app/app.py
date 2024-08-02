@@ -3,6 +3,7 @@ import os
 import re
 import pandas as pd
 import pdfplumber
+from flask_cors import CORS
 
 # Function to extract text from a PDF
 def extract_text_from_pdf(pdf_path):
@@ -195,9 +196,9 @@ income_statement_df = pd.DataFrame(income_statement_table)
 balance_sheet_df = pd.DataFrame(balance_sheet_table)
 cashflow_df = pd.DataFrame(cashflow_table)
 
-cashflow_df = cashflow_df.drop(cashflow_df.index)
+#cashflow_df = cashflow_df.drop(cashflow_df.index)
 
-cashflow_df = cashflow_df.drop(cashflow_df.columns, axis = 1)
+#cashflow_df = cashflow_df.drop(cashflow_df.columns, axis = 1)
 
 # Print Income Statement Table as DataFrame
 # print("Income Statement Table:")
@@ -866,12 +867,17 @@ print(book_leverage_ratio_df)
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads/'
+
+# Set up the upload folder in Flask's config
+app.config['UPLOAD_FOLDER'] = 'uploads'
+
+# Enable CORS for the app
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Adjust origin as needed
 
 # Ensure the upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-@app.route('/')
+@app.route('/balance-sheet', methods=['GET'])
 def index():
     return render_template('index.html')
 
@@ -882,15 +888,15 @@ def upload():
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
-            extracted_data = extract_data_from_pdf(
+            extracted_data1 = extract_data_from_pdf(
                           income_statement_df, 
                           balance_sheet_df, 
                           cashflow_df, 
-                          extracted_data, 
+                          extracted_df, 
                           dsc_df, 
                           roe_table, 
                           book_leverage_ratio_df)
-            return render_template('results.html', **extracted_data)
+            return render_template('results.html', **extracted_data1)
     return render_template('upload.html')
 
 def extract_data_from_pdf(
@@ -901,7 +907,7 @@ def extract_data_from_pdf(
                           dsc_df, 
                           roe_table, 
                           book_leverage_ratio_df):
-    extracted_data = {
+    extracted_data1 = {
         "income_statement": income_statement_df,
         "balance_sheet": balance_sheet_df,
         "cashflow_statement": cashflow_df,
@@ -910,6 +916,7 @@ def extract_data_from_pdf(
         "roe_table": roe_table,
         "book_leverage_table": book_leverage_ratio_df
     }
+    return extracted_data1
 
 if __name__ == '__main__':
     app.run(debug=True)
