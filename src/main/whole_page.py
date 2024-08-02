@@ -177,7 +177,7 @@ def is_notes_for_fs_start(parameter):
     return False
 
 # Example usage with your PDF file
-pdf_path = "/Users/prakashsethu/Documents/Whole Balance sheets - updated - v2 (v1 errors removed)/Company 1 - Full Balance Sheet - Sheet1-6.pdf"
+pdf_path = "/Users/sahanapranesh/Downloads/Archive (1)/Whole Balance sheets - updated - v2 (v1 errors removed)/Company 3- Full Balance Sheet - Sheet1.pdf"
 
 # Extract tables from the PDF
 structured_data = extract_tables_from_pages(pdf_path)
@@ -209,7 +209,7 @@ print("\nBalance Sheet Table:")
 print(balance_sheet_df)
 
 # Extract text from the PDF
-text = extract_text_from_pdf(pdf_path, page_numbers)
+text = extract_text_from_pdf(pdf_path)
     
 # Analyze the extracted text
 company_name, quality_of_statements = analyze_text(text)
@@ -856,8 +856,77 @@ def extract_book_leverage_ratio(balance_sheet_df):
     return pd.DataFrame(book_leverage_ratio_table)
 
 
-# Example usage
+# Generate Book Leverage Table
 book_leverage_ratio_df = extract_book_leverage_ratio(balance_sheet_df)
 
 print ("Book Leverage Calculation")
 print(book_leverage_ratio_df)
+
+
+def extract_cashflow_leverage_ratio(balance_sheet_df,extracted_data):
+
+    # Retrieve Adjusted EBITDA from extracted data
+    adjusted_ebitda_current = extracted_data['Adjusted EBITDA']['Current Year']
+    adjusted_ebitda_previous = extracted_data['Adjusted EBITDA']['Previous Year']
+
+    total_funded_debt_names = ["Short term debt","Bank Indebtedness","CPLTD","Current portion of long term debt","Current portion of longterm debt",
+                               "Current portion of term debt","Long Term Debt","Term Debt","Current portion of obligations under capital lease",
+                               "obligations under capital lease"]
+    
+    # Extract the metrics using the extract_metric function
+    funded_debt_current, funded_debt_previous = extract_metric(balance_sheet_df, total_funded_debt_names, sum_values= True)
+    
+    # Calculate Debt/Adjusted EBITDA ratio
+    debt_ebitda_current = funded_debt_current / adjusted_ebitda_current
+    debt_ebitda_previous = funded_debt_previous / adjusted_ebitda_previous
+    
+    #Define Cashflow Leverage Threshold
+    cashflow_lev_threshold = 3
+
+    #Calculate Cashflow Leverage Headroom
+    if debt_ebitda_current < cashflow_lev_threshold and debt_ebitda_current > 0:
+        cashflow_headroom_current = adjusted_ebitda_current - (funded_debt_current/cashflow_lev_threshold)
+    else:
+        cashflow_headroom_current = "NA"
+
+    if debt_ebitda_previous < cashflow_lev_threshold and debt_ebitda_previous > 0:
+        cashflow_headroom_previous = adjusted_ebitda_previous - (funded_debt_previous/cashflow_lev_threshold)
+    else:
+        cashflow_headroom_previous = "NA"
+
+    # Create the Cashflow Leverage Ratio Table
+    cashflow_leverage_ratio_table = [
+        {
+            'Parameter': 'Total Funded Debt',
+            'Current Year': funded_debt_current,
+            'Previous Year': funded_debt_previous
+        },
+        {
+            'Parameter': 'Adjusted EBITDA',
+            'Current Year': adjusted_ebitda_current,
+            'Previous Year': adjusted_ebitda_previous
+        },
+        {
+            'Parameter': 'Cashflow Leverage (Funded Debt/ EBITDA)',
+            'Current Year': debt_ebitda_current,
+            'Previous Year': debt_ebitda_previous
+        },
+        {
+            'Parameter': 'Cashflow Leverage Threshold',
+            'Current Year': cashflow_lev_threshold,
+            'Previous Year': cashflow_lev_threshold
+        },
+        {
+            'Parameter': 'Cashflow Leverage Headroom',
+            'Current Year': cashflow_headroom_current,
+            'Previous Year': cashflow_headroom_previous
+        }
+    ]
+    
+    return pd.DataFrame(cashflow_leverage_ratio_table)
+
+# Generate Book Leverage Table
+cashflow_leverage_ratio_df = extract_cashflow_leverage_ratio(balance_sheet_df, extracted_data)
+
+print ("Cashflow Leverage Calculation")
+print(cashflow_leverage_ratio_df)

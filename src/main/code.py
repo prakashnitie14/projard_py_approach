@@ -171,7 +171,7 @@ def is_cashflow_start(parameter):
     return False
 
 # Example usage with your PDF file
-pdf_path = "/Users/prakashsethu/Documents/Whole Balance sheets - updated - v2 (v1 errors removed)/Company 3- Full Balance Sheet - Sheet1.pdf"
+pdf_path = "/Users/sahanapranesh/Downloads/Archive (1)/Whole Balance sheets - updated - v2 (v1 errors removed)/Company 3- Full Balance Sheet - Sheet1.pdf"
 
 # Specify the page numbers (1-indexed)
 page_numbers = [1,2,3,4,5,6,7,8]  # Example page numbers: for balance sheet,  income statement and cashflow statement
