@@ -1,0 +1,22 @@
+/* Table.css */
+.light-green {
+    background-color: #d4edda; /* Light green for growth */
+}
+
+.light-blue {
+    background-color: #cce5ff; /* Light blue for fall */
+}
+.light-red {
+    background-color: #f8d7da; /* Light blue for fall */
+}
+.tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  

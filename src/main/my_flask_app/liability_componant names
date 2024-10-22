@@ -1,0 +1,11 @@
+ liability_componant_names =  ["Bank Indebtedness", "Short term debt","Accounts Payable", "Supplier accounts",
+                                  "Accounts Payable and Accrued Liabilities","Income tax payable","Income taxes payable","Current Tax","Deferred Taxes",
+                                  "Customer Deposits","Other Liabilities",
+                                  "Deposits Received","CPLTD","Current portion of long term debt","Current portion of LTD","Deferred income",
+                                  "Current portion of obligations under capital lease","Government Remittances","Deferred Revenue","Deferred Revenues",
+                                  "Current portion of lease liabilities","Current portion of debt",
+                                  "Government Remittances Payable","Government loan","Long Term debt",
+                                  "Term loan","non current debt","non-current debt","Debt","Lease Liabilities","Defined benefit liabilities",
+                                  "Obligations under Capital Lease","Due to Shareholders","Due to Shareholder","Due to Directors","Due to Director",
+                                  "Due to Related Parties","Due to Related Party","Loan from Shareholders","Loan from Directors","Loan from Shareholder","Loan from Director",
+                                  "Loan from Related Parties","Loan from Related Party","Preferred Shares"]

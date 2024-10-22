@@ -138,6 +138,8 @@ def split_into_tables(df):
         elif is_notes_for_fs_start(row['Parameter']):
             current_table = 'Notes for Financial Statement'
 
+        print (current_table)
+
         if current_table == 'Income Statement':
             income_statement_table.append(row)
         elif current_table == 'Balance Sheet':
@@ -179,7 +181,7 @@ def is_notes_for_fs_start(parameter):
     return False
 
 # Example usage with your PDF file
-pdf_path = "/Users/prakashsethu/Documents/Whole Balance sheets - updated - v2 (v1 errors removed)/Company 1 - Full Balance Sheet - Sheet1-6.pdf"
+pdf_path = "/Users/prakashsethu/Documents/Whole Balance sheets - updated - v2 (v1 errors removed)/Format 4 - Sheet1.pdf"
 
 # Extract tables from the PDF
 structured_data = extract_tables_from_pages(pdf_path)
