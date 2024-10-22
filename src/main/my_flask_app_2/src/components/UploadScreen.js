@@ -7,28 +7,37 @@ function UploadScreen({ onUpload }) {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
+  // Handle file input change
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
+  // Handle file upload and send data to backend
   const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file to upload");
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
-    console.log(file);  // Log response data
-  
+
     try {
-      const response = await axios.post('http://127.0.0.1:5000/upload', formData);
-      const responseData = response.data;  // This is where you define responseData
-      console.log("Upload successful", file);  // Log response data
-      
-      // Create a local URL for the file
+      // Send file to the backend
+      const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const responseData = response.data;  // Response from backend (results)
+
+      // Create a local URL for the uploaded PDF file
       const fileURL = URL.createObjectURL(file);
-      
-      onUpload(fileURL);  // Pass the data to parent or wherever needed
 
-      console.log("FileURL", fileURL);  // Log response data
+      // Pass the file URL and response data to ResultsScreen
+      navigate('/results', { state: { fileURL, responseData } });
 
-      navigate('/results', { state: { fileURL } });  // Navigate to ResultScreen with the data
     } catch (error) {
       console.error('Error uploading file:', error);
     }

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import WelcomeScreen from './components/WelcomeScreen';
 import UploadScreen from './components/UploadScreen';
 import ResultsScreen from './components/ResultsScreen';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [results, setResults] = useState(null);
