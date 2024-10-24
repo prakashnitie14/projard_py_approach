@@ -1,0 +1,37 @@
+/* resultsScreen.css */
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-custom th, .table-custom td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .table-custom th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .table-custom tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .table-custom tr:hover {
+    background-color: #ddd;
+  }
+  
+  .table-custom td a {
+    color: blue;
+    text-decoration: underline;
+  }
+  
+  .table-custom td a:hover {
+    color: darkblue;
+  }
+  
+  .table-custom .highlight {
+    background-color: yellow;
+  }
+  
