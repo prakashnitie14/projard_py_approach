@@ -1,4 +1,4 @@
-import { React, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
@@ -8,71 +8,89 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import './Table.css';
 
 const ResultsScreen = () => {
+  const [responseData, setResponseData] = useState(null);
+  const [fileURL, setfileURL] = useState(null);
   const [selectedOption, setSelectedOption] = React.useState('Income Statement');
-  const [selectedNote, setSelectedNote] = React.useState(0);  // For storing the selected note
+  const [selectedNote, setSelectedNote] = React.useState(null);  // For storing the selected note
   const navigate = useNavigate();
   const location = useLocation();
-  const { fileURL, responseData } = location.state || {};  // Get file URL and response data from state
 
   // Debugging: Check if data is received correctly
   console.log('File URL:', fileURL);
   console.log('Response Data:', responseData);
 
-  if (!fileURL || !responseData) {
-    // If no data, navigate back to upload screen
-    navigate('/upload');
-    return null;
-  }
+  useEffect(() => {
+    const tableContainer = document.querySelector('.html-content-container');
 
-  const handleNoteClick = (noteContent, event) => {
+    if (tableContainer) {
+      tableContainer.addEventListener('click', (event) => handleNoteClick(event));
+    }
+
+    if (location.state?.responseData) {
+      setResponseData(location.state.responseData);
+      setfileURL(location.state.fileURL);
+      localStorage.setItem('responseData', JSON.stringify(location.state.responseData)); // Save to localStorage
+      localStorage.setItem('fileURL', JSON.stringify(location.state.fileURL));
+    } else {
+      const savedData = localStorage.getItem('responseData');  // Retrieve from localStorage if available
+      const savedURL = localStorage.getItem('fileURL');  // Retrieve from localStorage if available
+      if (savedData) {
+        setResponseData(JSON.parse(savedData));
+        setfileURL(JSON.parse(savedURL));
+      } else {
+        navigate('/upload');
+      }
+    }
+  }, [location.state, navigate]);
+
+  const handleNoteClick = (event) => {
+    console.log('Note clicked');
     event.preventDefault();
-    alert('Selected note');
+    const noteLinkText = event.target.innerText;
+    console.log('Selected link text :', noteLinkText);
+    const noteContent = responseData.notes[noteLinkText];
+    console.log('Selected noteContent :', noteContent);
     setSelectedNote(noteContent);
   };
   // utility.js
 
-
-  const ApplyColorCoding = (htmlString) => {
+  const applyColorCoding = (htmlString) => {
     // Use a DOMParser to parse and manipulate the HTML string
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
+    console.log ('doc:', doc)
 
     // Find all table rows
     const rows = doc.querySelectorAll('tr');
     // Handle note clicks
 
     // Loop through rows to find "Growth/Fall" column and apply color to column "C"
-    useEffect(() => {
-      rows.forEach((row, index) => {
-        if (index > 0) { // Skip the header row
-          const growthFallCol = row.cells[5];
-          const colC = row.cells[6];
+    rows.forEach((row, index) => {
+      if (index > 0) { // Skip the header row
+        const growthFallCol = row.cells[5];
+        const colC = row.cells[6];
 
-          const notesCol = row.cells[2];  // Assuming "Notes" is in column 4 (index 1)
+        const notesCol = row.cells[2];  // Assuming "Notes" is in column 4 (index 1)
 
-          // If the "Notes" column contains references like "(note 2)"
-          if (notesCol && notesCol.innerText.trim()) {  // If the Notes column has content
-            const noteContent = notesCol.innerText.trim();
-            notesCol.innerHTML = `<a href="#" class="note-link">${noteContent}</a>`;
-            // notesCol.innerHTML = `<a href="#" onclick={(event) => handleNoteClick(event,noteContent)}>${noteContent}</a>`;
-            const noteLink = notesCol.querySelector('.note-link');
-            if (noteLink) {
-              noteLink.addEventListener('click', (event) => handleNoteClick(noteContent, event));
-            }
-          }
-
-          // Extract and clean the "Growth/Fall" value (assuming it contains a %)
-          const growthFallValue = parseFloat(growthFallCol.innerText.replace('%', '').replace('growth', '').replace('fall', '').trim());
-
-          // If "Growth/Fall" is greater than 10%, color column "C" in red
-          if (growthFallValue > 10) {
-            colC.style.backgroundColor = 'red'; // Change the background color
-          } else {
-            colC.style.backgroundColor = ''; // Reset background color if not greater than 10%
-          }
+        // If the "Notes" column contains references like "(note 2)"
+        console.log(notesCol.innerHTML)
+        if (notesCol && notesCol.innerText.trim()) {  // If the Notes column has content
+          const noteContent = notesCol.innerText.trim();
+          notesCol.innerHTML = `<a href="#" class="note-link">${noteContent}</a>`;
+          const noteLink = notesCol.querySelector('.note-link');
         }
-      });
-    }, [rows]);
+
+        // Extract and clean the "Growth/Fall" value (assuming it contains a %)
+        const growthFallValue = parseFloat(growthFallCol.innerText.replace('%', '').replace('growth', '').replace('fall', '').trim());
+
+        // If "Growth/Fall" is greater than 10%, color column "C" in red
+        if (growthFallValue > 10) {
+          colC.style.backgroundColor = 'red'; // Change the background color
+        } else {
+          colC.style.backgroundColor = ''; // Reset background color if not greater than 10%
+        }
+      }
+    });
 
     // Return the modified HTML string
     return doc.body.innerHTML;
@@ -82,31 +100,35 @@ const ResultsScreen = () => {
 
 
   const getHtmlContent = () => {
-    // if (!responseData || !responseData.income_statement) return '<p>No data available</p>';
-    return ApplyColorCoding(responseData.income_statement) || '<p>No Data available</p>';
-    // switch (selectedOption) {
-    //   case 'Income Statement':
-    //     return useApplyColorCoding(responseData.income_statement) || '<p>No Data available</p>';
-    //   case 'Balance Sheet':
-    //     return useApplyColorCoding(responseData.balance_sheet) || '<p>No Data available</p>'
-    //   case 'Cashflow Statement (if available)':
-    //     return useApplyColorCoding(responseData.balance_sheet) || '<p>No data available</p>';
-    //   case 'Operating Financial Metrics':
-    //     return responseData.operating_financials || '<p>No data available</p>';
-    //   case 'Debt Service Coverage (DSC)':
-    //     return responseData.dsc_table || '<p>No data available</p>';
-    //   case 'Book Leverage - Debt/ TNW':
-    //     return responseData.book_leverage_table || '<p>No data available</p>';
-    //   case 'Return on Equity (ROE)':
-    //     return responseData.roe_table || '<p>No data available</p>';
-    //   case 'Cashflow Leverage (Debt / EBITDA)':
-    //     return responseData.cashflow_leverage_table || '<p>No data available</p>';
-    //   case 'Notes to financial statement':
-    //     return responseData.notes_dict || '<p>No data available</p>';
-    //   default:
-    //     return '<p>No data available</p>';
-    // }
+    if (!responseData || !responseData.income_statement) return '<p>No data available</p>';
+    switch (selectedOption) {
+      case 'Income Statement':
+        return applyColorCoding(responseData.income_statement) || '<p>No Data available</p>';
+      case 'Balance Sheet':
+        return applyColorCoding(responseData.balance_sheet) || '<p>No Data available</p>'
+      case 'Cashflow Statement (if available)':
+        return applyColorCoding(responseData.balance_sheet) || '<p>No data available</p>';
+      case 'Operating Financial Metrics':
+        return responseData.operating_financials || '<p>No data available</p>';
+      case 'Debt Service Coverage (DSC)':
+        return responseData.dsc_table || '<p>No data available</p>';
+      case 'Book Leverage - Debt/ TNW':
+        return responseData.book_leverage_table || '<p>No data available</p>';
+      case 'Return on Equity (ROE)':
+        return responseData.roe_table || '<p>No data available</p>';
+      case 'Cashflow Leverage (Debt / EBITDA)':
+        return responseData.cashflow_leverage_table || '<p>No data available</p>';
+      case 'Notes to financial statement':
+        return responseData.notes_dict || '<p>No data available</p>';
+      default:
+        return '<p>No data available</p>';
+    }
   };
+
+  // If no fileURL or responseData, prevent rendering
+  if (!responseData) {
+    return <div>Loading...</div>; // Add a loading state or navigate back to upload
+  }
 
   return (
     <div style={{ flex: '1', display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -147,7 +169,9 @@ const ResultsScreen = () => {
             </div>
           </div>
           <select
-            onChange={(e) => setSelectedOption(e.target.value)}
+            onChange={(e) => {
+              setSelectedOption(e.target.value);
+            }}
             value={selectedOption}
             style={{ marginTop: '20px' }}
           >
@@ -162,7 +186,8 @@ const ResultsScreen = () => {
             <option value="Notes to financial statement">Notes to financial statement</option>
           </select>
 
-          <div dangerouslySetInnerHTML={{ __html: getHtmlContent() }} style={{ maxHeight: '50%', overflow: 'scroll' }} />
+          <div className="html-content-container"
+            dangerouslySetInnerHTML={{ __html: getHtmlContent() }} style={{ maxHeight: '50%', overflow: 'scroll' }} />
           {/* Notes Panel */}
           <div style={{ flex: 0.25, borderTop: '1px solid #ccc', paddingTop: '20px' }}>
             <h3>Note Details</h3>
