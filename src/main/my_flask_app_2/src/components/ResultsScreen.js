@@ -49,6 +49,7 @@ const ResultsScreen = () => {
     const noteLinkText = event.target.innerText;
     console.log('Selected link text :', noteLinkText);
     const noteContent = responseData.notes[noteLinkText];
+    console.log('Selected noteContent :', noteContent);
     setSelectedNote(noteContent);
   };
   // utility.js
@@ -57,6 +58,7 @@ const ResultsScreen = () => {
     // Use a DOMParser to parse and manipulate the HTML string
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
+    console.log ('doc:', doc)
 
     // Find all table rows
     const rows = doc.querySelectorAll('tr');
@@ -71,6 +73,7 @@ const ResultsScreen = () => {
         const notesCol = row.cells[2];  // Assuming "Notes" is in column 4 (index 1)
 
         // If the "Notes" column contains references like "(note 2)"
+        console.log(notesCol.innerHTML)
         if (notesCol && notesCol.innerText.trim()) {  // If the Notes column has content
           const noteContent = notesCol.innerText.trim();
           notesCol.innerHTML = `<a href="#" class="note-link">${noteContent}</a>`;
@@ -101,22 +104,22 @@ const ResultsScreen = () => {
     switch (selectedOption) {
       case 'Income Statement':
         return applyColorCoding(responseData.income_statement) || '<p>No Data available</p>';
-      // case 'Balance Sheet':
-      //   return applyColorCoding(responseData.balance_sheet) || '<p>No Data available</p>'
-      // case 'Cashflow Statement (if available)':
-      //   return applyColorCoding(responseData.balance_sheet) || '<p>No data available</p>';
-      // case 'Operating Financial Metrics':
-      //   return responseData.operating_financials || '<p>No data available</p>';
-      // case 'Debt Service Coverage (DSC)':
-      //   return responseData.dsc_table || '<p>No data available</p>';
-      // case 'Book Leverage - Debt/ TNW':
-      //   return responseData.book_leverage_table || '<p>No data available</p>';
-      // case 'Return on Equity (ROE)':
-      //   return responseData.roe_table || '<p>No data available</p>';
-      // case 'Cashflow Leverage (Debt / EBITDA)':
-      //   return responseData.cashflow_leverage_table || '<p>No data available</p>';
-      // case 'Notes to financial statement':
-      //   return responseData.notes_dict || '<p>No data available</p>';
+      case 'Balance Sheet':
+        return applyColorCoding(responseData.balance_sheet) || '<p>No Data available</p>'
+      case 'Cashflow Statement (if available)':
+        return applyColorCoding(responseData.balance_sheet) || '<p>No data available</p>';
+      case 'Operating Financial Metrics':
+        return responseData.operating_financials || '<p>No data available</p>';
+      case 'Debt Service Coverage (DSC)':
+        return responseData.dsc_table || '<p>No data available</p>';
+      case 'Book Leverage - Debt/ TNW':
+        return responseData.book_leverage_table || '<p>No data available</p>';
+      case 'Return on Equity (ROE)':
+        return responseData.roe_table || '<p>No data available</p>';
+      case 'Cashflow Leverage (Debt / EBITDA)':
+        return responseData.cashflow_leverage_table || '<p>No data available</p>';
+      case 'Notes to financial statement':
+        return responseData.notes_dict || '<p>No data available</p>';
       default:
         return '<p>No data available</p>';
     }
